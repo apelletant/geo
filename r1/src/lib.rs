@@ -27,7 +27,7 @@ impl Interval {
     }
 
     pub fn equal(self, oi: Interval) -> bool {
-        return self == oi || self.is_empty() && oi.is_empty();
+        return self == oi || (self.is_empty() && oi.is_empty());
     }
 
     pub fn center(self) -> f64 {
@@ -85,15 +85,15 @@ impl Interval {
 
     pub fn add_point(self, p: f64) -> Interval {
         if self.is_empty() {
-            Interval { lo: p, hi: p };
+            return Interval { lo: p, hi: p };
         }
 
         if p < self.lo {
-            Interval { lo: p, hi: self.hi };
+            return Interval { lo: p, hi: self.hi };
         }
 
         if p > self.hi {
-            Interval { lo: self.lo, hi: p };
+            return Interval { lo: self.lo, hi: p };
         }
 
         return self;
@@ -503,10 +503,9 @@ mod interval {
         ];
 
         for test in tests_array {
-            let res: Interval;
+            let res = test.interval.add_point(test.point);
 
-            res = test.interval.add_point(test.point);
-            assert_eq!(true, test.want.equal(res))
+            assert_eq!(true, res.equal(test.want))
         }
     }
 
@@ -572,7 +571,7 @@ mod interval {
             },
             ExpendedTest {
                 interval: unit,
-                margin: 0.51,
+                margin: -0.51,
                 want: empty,
             },
         ];
