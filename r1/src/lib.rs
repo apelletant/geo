@@ -1,3 +1,3 @@
 mod interval;
 
-use interval::*;
+pub use interval::*;

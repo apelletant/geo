@@ -1,3 +1,3 @@
 mod point;
 
-use point::*;
+pub use point::*;
