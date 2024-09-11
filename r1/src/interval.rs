@@ -2,8 +2,8 @@ use std::f64::INFINITY;
 
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub struct Interval {
-    lo: f64,
-    hi: f64,
+    pub lo: f64,
+    pub hi: f64,
 }
 
 pub fn empty_interval() -> Interval {
