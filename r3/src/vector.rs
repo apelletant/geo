@@ -5,6 +5,16 @@ pub struct Vector {
     pub z: f64,
 }
 
+use Axis as i64;
+
+// The three axes of ℝ³.
+#[repr(i64)]
+enum Axes {
+    xAxis = 0
+    yAxis
+    zAxis
+}
+
 impl Vector {
     pub fn approx_equal(self, v: Vector) -> bool {
         let epsilon = 1e-16;
@@ -83,118 +93,119 @@ impl Vector {
     pub fn dot(self, v: Vector) -> f64 {
         return self.x * v.x + self.y * v.y + self.z * v.z;
     }
-}
 
-/*
-// Cross returns the standard cross product of v and ov.
-func (v Vector) Cross(ov Vector) Vector {
-    return Vector{
-        float64(v.Y*ov.Z) - float64(v.Z*ov.Y),
-        float64(v.Z*ov.X) - float64(v.X*ov.Z),
-        float64(v.X*ov.Y) - float64(v.Y*ov.X),
+    // cross returns the standard cross product of v and ov.
+    pub fn cross(self, v: Vector) -> Vector {
+        return Vector {
+            x: self.y * v.z - self.z * v.y,
+            y: self.z * v.x - self.x * v.z,
+            z: self.x * v.y - self.y * v.x,
+        };
     }
-}
 
-// Distance returns the Euclidean distance between v and ov.
-func (v Vector) Distance(ov Vector) float64 { return v.Sub(ov).Norm() }
-
-// Angle returns the angle between v and ov.
-func (v Vector) Angle(ov Vector) s1.Angle {
-    return s1.Angle(math.Atan2(v.Cross(ov).Norm(), v.Dot(ov))) * s1.Radian
-}
-
-// Axis enumerates the 3 axes of ℝ³.
-type Axis int
-
-// The three axes of ℝ³.
-const (
-    XAxis Axis = iota
-    YAxis
-    ZAxis
-)
-
-// Ortho returns a unit vector that is orthogonal to v.
-// Ortho(-v) = -Ortho(v) for all v.
-func (v Vector) Ortho() Vector {
-    ov := Vector{}
-    switch v.LargestComponent() {
-    case XAxis:
-        ov.Z = 1
-    case YAxis:
-        ov.X = 1
-    default:
-        ov.Y = 1
+    // distance returns the Euclidean distance between v and ov.
+    pub fn distance(self, v: Vector) -> f64 {
+        return self.sub(v).norm();
     }
-    return v.Cross(ov).Normalize()
-}
 
-// LargestComponent returns the axis that represents the largest component in this vector.
-func (v Vector) LargestComponent() Axis {
-    t := v.Abs()
+    /* TODO
+    // angle returns the angle between v and ov.
+    func (v Vector) Angle(ov Vector) s1.Angle {
+        return s1.Angle(math.Atan2(v.Cross(ov).Norm(), v.Dot(ov))) * s1.Radian
+    }
+    */
 
-    if t.X > t.Y {
-        if t.X > t.Z {
-            return XAxis
+
+    // ortho returns a unit vector that is orthogonal to v.
+    // ortho(-v) = -ortho(v) for all v.
+    pub fn orhto(self) -> Vector {
+        let mut v :Vector;
+
+        match self.largest_component() {
+            xAxis => v.z = 1,
+            yAxis => v.x = 1,
+            _ => v.y = 1,
         }
-        return ZAxis
-    }
-    if t.Y > t.Z {
-        return YAxis
-    }
-    return ZAxis
-}
 
-// SmallestComponent returns the axis that represents the smallest component in this vector.
-func (v Vector) SmallestComponent() Axis {
-    t := v.Abs()
+        return self.cross(v).normalize()
+    }
 
-    if t.X < t.Y {
-        if t.X < t.Z {
-            return XAxis
+
+    // largest_component returns the axis that represents the largest component in this vector.
+    pub fn largest_component(self) -> Axis {
+        let v = self.abs()
+
+        if v.x > v.y {
+            if v.x > v.z {
+                return Axes::xAxis
+            }
+            
+            return Axes::zAxis
         }
-        return ZAxis
+
+        if v.y > v.z {
+            return Axes::yAxis
+        }
+
+        return Axes::zAxis
     }
-    if t.Y < t.Z {
-        return YAxis
+
+    // smallest_component returns the axis that represents the smallest component in this vector.
+    pub fn smallest_component(self) -> Axis {
+        let v: Vector = self.abs()
+
+        if v.x < v.y {
+            if t.x < t.z {
+                return Axes::xAxis
+            }
+
+            return Axes::zAxis
+        }
+
+        if v.y < v.z {
+            return Axes::yAxis
+        }
+
+        return Axis::zAxes
     }
-    return ZAxis
+
+
+    // cmp compares v and ov lexicographically and returns:
+    //
+    //	-1 if v <  ov
+    //	 0 if v == ov
+    //	+1 if v >  ov
+    //
+    // This method is based on C++'s std::lexicographical_compare. Two entities
+    // are compared element by element with the given operator. The first mismatch
+    // defines which is less (or greater) than the other. If both have equivalent
+    // values they are lexicographically equal.
+    pub fn cmp(self, v:Vector) -> i64 {
+        if self.x < v.x {
+            return -1
+        }
+
+        if self.x > v.x {
+            return 1
+        }
+
+        // First elements were the same, try the next.
+        if self.y < v.y{
+            return -1
+        }
+        if self.y > v.y {
+            return 1
+        }
+    
+        // Second elements were the same return the final compare.
+        if self.z < v.z {
+            return -1
+        }
+        if self.z > v.z {
+            return 1
+        }
+
+        // Both are equal
+        return 0
+    }
 }
-
-// Cmp compares v and ov lexicographically and returns:
-//
-//	-1 if v <  ov
-//	 0 if v == ov
-//	+1 if v >  ov
-//
-// This method is based on C++'s std::lexicographical_compare. Two entities
-// are compared element by element with the given operator. The first mismatch
-// defines which is less (or greater) than the other. If both have equivalent
-// values they are lexicographically equal.
-func (v Vector) Cmp(ov Vector) int {
-    if v.X < ov.X {
-        return -1
-    }
-    if v.X > ov.X {
-        return 1
-    }
-
-    // First elements were the same, try the next.
-    if v.Y < ov.Y {
-        return -1
-    }
-    if v.Y > ov.Y {
-        return 1
-    }
-
-    // Second elements were the same return the final compare.
-    if v.Z < ov.Z {
-        return -1
-    }
-    if v.Z > ov.Z {
-        return 1
-    }
-
-    // Both are equal
-    return 0
-}
-* */
