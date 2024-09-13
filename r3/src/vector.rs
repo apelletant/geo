@@ -5,21 +5,19 @@ pub struct Vector {
     pub z: f64,
 }
 
-use Axis as i64;
-
 // The three axes of ℝ³.
 #[repr(i64)]
 enum Axes {
-    xAxis = 0
-    yAxis
-    zAxis
+    XAxis = 0,
+    YAxis,
+    ZAxis,
 }
 
 impl Vector {
     pub fn approx_equal(self, v: Vector) -> bool {
         let epsilon = 1e-16;
         return (self.x - v.x).abs() < epsilon
-            && (self.y - v.Y) < epsilon
+            && (self.y - v.y) < epsilon
             && (self.z - v.z) < epsilon;
     }
 
@@ -40,18 +38,22 @@ impl Vector {
     pub fn normalize(self) -> Vector {
         let n2 = self.norm2();
 
-        if n2 == 0 {
-            return Vector { x: 0, y: 0, z: 0 };
+        if n2 == 0.0 {
+            return Vector {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+            };
         }
 
-        return self.mul(1 / n2.sqrt());
+        return self.mul(1.0 / n2.sqrt());
     }
 
     // is_unit returns whether this vector is of approximately unit length.
     pub fn is_unit(self) -> bool {
         let epsilon = 5e-14;
 
-        return (self.norm2() - 1).abs() <= epsilon;
+        return (self.norm2() - 1.0).abs() <= epsilon;
     }
 
     pub fn mul(self, m: f64) -> Vector {
@@ -115,60 +117,61 @@ impl Vector {
     }
     */
 
-
     // ortho returns a unit vector that is orthogonal to v.
     // ortho(-v) = -ortho(v) for all v.
     pub fn orhto(self) -> Vector {
-        let mut v :Vector;
+        let mut v = Vector {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+        };
 
         match self.largest_component() {
-            xAxis => v.z = 1,
-            yAxis => v.x = 1,
-            _ => v.y = 1,
+            Axes::XAxis => v.z = 1.0,
+            Axes::YAxis => v.x = 1.0,
+            _ => v.y = 1.0,
         }
 
-        return self.cross(v).normalize()
+        return self.cross(v).normalize();
     }
 
-
     // largest_component returns the axis that represents the largest component in this vector.
-    pub fn largest_component(self) -> Axis {
-        let v = self.abs()
+    pub fn largest_component(self) -> Axes {
+        let v = self.abs();
 
         if v.x > v.y {
             if v.x > v.z {
-                return Axes::xAxis
+                return Axes::XAxis;
             }
-            
-            return Axes::zAxis
+
+            return Axes::ZAxis;
         }
 
         if v.y > v.z {
-            return Axes::yAxis
+            return Axes::YAxis;
         }
 
-        return Axes::zAxis
+        return Axes::ZAxis;
     }
 
     // smallest_component returns the axis that represents the smallest component in this vector.
-    pub fn smallest_component(self) -> Axis {
-        let v: Vector = self.abs()
+    pub fn smallest_component(self) -> Axes {
+        let v: Vector = self.abs();
 
         if v.x < v.y {
-            if t.x < t.z {
-                return Axes::xAxis
+            if v.x < v.z {
+                return Axes::XAxis;
             }
 
-            return Axes::zAxis
+            return Axes::ZAxis;
         }
 
         if v.y < v.z {
-            return Axes::yAxis
+            return Axes::YAxis;
         }
 
-        return Axis::zAxes
+        return Axes::ZAxis;
     }
-
 
     // cmp compares v and ov lexicographically and returns:
     //
@@ -180,32 +183,32 @@ impl Vector {
     // are compared element by element with the given operator. The first mismatch
     // defines which is less (or greater) than the other. If both have equivalent
     // values they are lexicographically equal.
-    pub fn cmp(self, v:Vector) -> i64 {
+    pub fn cmp(self, v: Vector) -> i64 {
         if self.x < v.x {
-            return -1
+            return -1;
         }
 
         if self.x > v.x {
-            return 1
+            return 1;
         }
 
         // First elements were the same, try the next.
-        if self.y < v.y{
-            return -1
+        if self.y < v.y {
+            return -1;
         }
         if self.y > v.y {
-            return 1
+            return 1;
         }
-    
+
         // Second elements were the same return the final compare.
         if self.z < v.z {
-            return -1
+            return -1;
         }
         if self.z > v.z {
-            return 1
+            return 1;
         }
 
         // Both are equal
-        return 0
+        return 0;
     }
 }
