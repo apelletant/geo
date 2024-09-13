@@ -16,7 +16,7 @@ pub fn interval_from_point(p: f64) -> Interval {
 
 // epsilon is a small number that represents a reasonable level of noise between two
 // values that can be considered to be equal.
-const EPSILON: f64 = 1e-15;
+const EPSILON: f64 = 1e-16;
 // dblEpsilon is a smaller number for values that require more precision.
 // This is the C++ DBL_EPSILON equivalent.
 const DBL_EPSILON: f64 = 2.220446049250313e-16;
