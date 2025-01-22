@@ -1,3 +1,3 @@
 # geo
 
-WIP implelentation of google geo but in Rust
+WIP implementation of google geo but in Rust
